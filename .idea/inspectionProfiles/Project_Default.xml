@@ -1,0 +1,72 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyArgumentListInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyAssignmentToLoopOrWithParameterInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyBroadExceptionInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyChainedComparisonsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoreConstantInTheMiddle" value="true" />
+    </inspection_tool>
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="E741" />
+          <option value="E111" />
+          <option value="E501" />
+          <option value="E722" />
+          <option value="E701" />
+          <option value="W605" />
+          <option value="E714" />
+          <option value="E711" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="N802" />
+          <option value="N813" />
+          <option value="N801" />
+          <option value="N803" />
+          <option value="N806" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyRedeclarationInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyShadowingBuiltinsInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
+      <option name="ignoredNames">
+        <list>
+          <option value="str" />
+          <option value="id" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyTypeCheckerInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="pysqlite3" />
+          <option value="index.views.index.views" />
+          <option value="sqlite3.cursor.execute" />
+          <option value="sqlite3.cursor.fetchall" />
+          <option value="aiogram.types.keyboardButton" />
+          <option value="PyQt5.QtWidgets" />
+          <option value="PyQt5.*" />
+          <option value="PyQt6.QtCore.Qt.Alignment" />
+          <option value="PyQt6.QtCore.Qt.red" />
+          <option value="aiogram.dispatcher.dispatcher.Dispatcher.*" />
+          <option value="typing.AsyncGenerator.*" />
+          <option value="network_model" />
+          <option value="list.*" />
+          <option value="float.__getitem__" />
+          <option value="serial.tools" />
+          <option value="PyQt6.QtCore.Qt.AlignCenter" />
+          <option value="PyQt6.QtCore.Qt.white" />
+          <option value="PyQt6.QtWidgets.QLayout.SetDefaultConstraint" />
+          <option value="PyQt6.QtWidgets.QSizePolicy.Minimum" />
+          <option value="PyQt6.QtWidgets.QSizePolicy.*" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
