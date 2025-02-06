@@ -40,6 +40,13 @@ class DB:
     def check_is_aut(self, email, password):
         return self.select_by("email", email)[-1] == password
 
+    def get_file(self, id):
+        self.cur.execute(
+            "SELECT id_file, name_file, path FROM public.files WHERE id_users = %s",
+            (id,)
+        )
+
+        return self.cur.fetchall()
 
     def __del__(self):
         self.conn.close()
@@ -48,8 +55,9 @@ class DB:
 
 if __name__ == "__main__":
     db = DB("react_db")
-    print(db.check_is_aut("email@email.com", "11111111"))
-    print(db.select_by("id", 1))
+    print(db.get_file(13))
+    # print(db.check_is_aut("email@email.com", "11111111"))
+    # print(db.select_by("id", 1))
     # print(db.get_user_id("email@email.co"))
     # db.get_users()
 

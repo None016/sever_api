@@ -2,7 +2,7 @@ import datetime
 import secrets
 import time
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file, Response
 from flask_cors import CORS
 import jwt
 from pyexpat.errors import messages
@@ -58,26 +58,48 @@ def autorization():
 @app.route("/verification", methods=["POST"])
 def token_verification():
     if request.is_json:
-        # try:
+        try:
+            db = DB("react_db")
+            data = request.get_json()
+            print(data)
+            data = jwt.decode(data["token"], app.config["SECRET_KEY"], algorithms=['HS256'])
+            print(data)
+            if db.select_by("id", data["id"]) is not None:
+                if int(data["exp"]) <= time.time():
+                    return jsonify({"message": "время сеанса истекло"}), 401
+                else:
+                    print("все ок")
+                    return jsonify({"message": "Пользователь авторизован"}), 200
+            else:
+                return jsonify({"message": "пользователь не найден"}), 409
+        except:
+            return jsonify({"message": "Неверный формат json"}), 415
+    else:
+        print("Неверный формат данных")
+        return jsonify({"message": "Неверный формат данных"}), 415
+
+
+@app.route("/get_files", methods=["POST"])
+def get_files():
+    if request.is_json:
         db = DB("react_db")
         data = request.get_json()
         print(data)
         data = jwt.decode(data["token"], app.config["SECRET_KEY"], algorithms=['HS256'])
         print(data)
-        if db.select_by("id", data["id"]) is not None:
-            if int(data["exp"]) <= time.time():
-                return jsonify({"message": "время сеанса истекло"}), 401
-            else:
-                print("все ок")
-                return jsonify({"message": "Пользователь авторизован"}), 200
-        else:
-            return jsonify({"message": "пользователь не найден"}), 409
-
-        # except:
-        #     return jsonify({"message": "Неверный формат json"}), 415
+        print(db.get_file(data["id"]))
+        return jsonify(db.get_file(data["id"])), 200
     else:
-        print("Неверный формат данных")
         return jsonify({"message": "Неверный формат данных"}), 415
+
+
+@app.route("/download/<file_name>")
+def download(file_name):
+    try:
+        filepath = f'file/{file_name}'
+        return send_file(filepath, as_attachment=True)
+    except FileNotFoundError:
+        return "Файл не найден", 404
 
 
 if __name__ == "__main__":
