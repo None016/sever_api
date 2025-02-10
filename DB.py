@@ -40,26 +40,86 @@ class DB:
     def check_is_aut(self, email, password):
         return self.select_by("email", email)[-1] == password
 
-    def get_file(self, id):
+    def get_files(self, id):
         self.cur.execute(
             "SELECT id_file, name_file, path FROM public.files WHERE id_users = %s",
             (id,)
         )
-
         return self.cur.fetchall()
+
+    def get_file_name(self, id_file):
+        self.cur.execute(
+            "SELECT name_file FROM public.files WHERE id_file = %s",
+            (id_file,)
+        )
+        return self.cur.fetchone()
 
     def __del__(self):
         self.conn.close()
         self.cur.close()
 
+    def set_name(self, new_name_file, new_path, id_file):
+        self.cur.execute(
+            "UPDATE public.files SET name_file=%s, path=%s WHERE id_file=%s",
+            (new_name_file, new_path, id_file)
+        )
+        self.conn.commit()
+
+    def get_file(self, id_file):
+        self.cur.execute(
+            "SELECT name_file, path FROM public.files WHERE id_file = %s",
+            (id_file,)
+        )
+        return self.cur.fetchone()
+
+    def check_download(self, id_file, id_user):
+        try:
+            self.cur.execute(
+                "SELECT * FROM public.download_rights WHERE id_file = %s AND id_user = %s",
+                (id_file, id_user)
+            )
+            if self.cur.fetchone() is not None:
+                return True
+            else:
+                return False
+        except:
+            return False
+
+    def get_access_download(self, id_file, id_user):
+        try:
+            self.cur.execute(
+                "SELECT id_user FROM public.download_rights WHERE id_file = %s AND id_user != %s",
+                (id_file, id_user)
+            )
+            return self.cur.fetchall()
+        except:
+            return None
+
+    def del_user_from_access_list(self, id_file, id_user):
+        try:
+            self.cur.execute(
+                "DELETE FROM public.download_rights	WHERE id_file = %s AND id_user = %s;",
+                (id_file, id_user)
+            )
+            self.conn.commit()
+        except:
+            print("Ошибка удаления 'del_user_from_access_list'")
+
+    def add_user_access_list(self, id_file, id_user):
+        try:
+            self.cur.execute(
+                "INSERT INTO public.download_rights(id_file, id_user) VALUES (%s, %s);",
+                (id_file, id_user)
+            )
+            self.conn.commit()
+        except:
+            print("Ошибка добавления")
+
 
 if __name__ == "__main__":
     db = DB("react_db")
-    print(db.get_file(13))
-    # print(db.check_is_aut("email@email.com", "11111111"))
-    # print(db.select_by("id", 1))
-    # print(db.get_user_id("email@email.co"))
-    # db.get_users()
+    # db.add_user_access_list(1, 14)
+
 
 
 
