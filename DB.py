@@ -67,7 +67,7 @@ class DB:
 
     def get_file(self, id_file):
         self.cur.execute(
-            "SELECT name_file, path FROM public.files WHERE id_file = %s",
+            "SELECT name_file, path, id_users FROM public.files WHERE id_file = %s",
             (id_file,)
         )
         return self.cur.fetchone()
@@ -115,10 +115,51 @@ class DB:
         except:
             print("Ошибка добавления")
 
+    def del_file(self, id_file):
+        try:
+            self.cur.execute(
+                "DELETE FROM public.files WHERE id_file = %s",
+                (id_file,)
+            )
+            self.conn.commit()
+        except:
+            print("Ошибка удаления файла")
+
+    def get_frend_file(self, id_user):
+        try:
+            self.cur.execute(
+                "SELECT id_file FROM public.download_rights WHERE id_user = %s",
+                (id_user,)
+            )
+            return self.cur.fetchall()
+        except:
+            return None
+
+    def set_file(self, name_file, path, id_users):
+        try:
+            self.cur.execute(
+                "INSERT INTO public.files(name_file, path, id_users) VALUES (%s, %s, %s);",
+                (name_file, path, id_users)
+            )
+            self.conn.commit()
+        except:
+            print("Ошибка")
+
+    def get_id_file(self, id_user, path):
+        # try:
+        self.cur.execute(
+            "SELECT id_file FROM public.files WHERE id_users = %s AND path = %s",
+            (id_user, path)
+        )
+        return self.cur.fetchone()
+        # except:
+        #     print("Ошибка")
+
 
 if __name__ == "__main__":
     db = DB("react_db")
-    # db.add_user_access_list(1, 14)
+    # db.set_file("111", "111.txt", 13)
+    db.get_id_file(13, '2.txt')
 
 
 

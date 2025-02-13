@@ -213,6 +213,98 @@ def add_user_access_list():
         return jsonify({"message": "Неверный формат данных"}), 415
 
 
+@app.route("/del_file", methods=["POST"])
+def del_file():
+    if request.is_json:
+        db = DB("react_db")
+        data = request.get_json()
+        user_jwt = jwt.decode(data["token"], app.config["SECRET_KEY"], algorithms=["HS256"])
+
+        file = db.get_file(data["id_file"])
+        print(file)
+        print(user_jwt["id"])
+        if file[-1] == user_jwt["id"]:
+            print(f"file/{file[1]}")
+            if os.path.exists(f"file/{file[1]}"):
+                os.remove(f"file/{file[1]}")
+                db.del_file(data["id_file"])
+                return jsonify({"message": "файл успешно удален"}), 200
+            else:
+                return jsonify({"message": "Не удалось удалить файл"}), 500
+        else:
+            return jsonify({"message": "Неверный id"}), 404
+    else:
+        return jsonify({"message": "Неверный формат данных"}), 415
+
+
+@app.route("/get_files_frends", methods=["POST"])
+def get_files_frends():
+    if request.is_json:
+        db = DB("react_db")
+        data = request.get_json()
+        user_jwt = jwt.decode(data["token"], app.config["SECRET_KEY"], algorithms=["HS256"])
+
+        print(user_jwt)
+        print(user_jwt["id"])
+
+        file = db.get_frend_file(user_jwt["id"])
+        print(file)
+
+        itog = []
+        for i in file:
+            f = db.get_file(i[0])
+            print(f)
+            if f[-1] != user_jwt["id"]:
+                itog.append(f)
+
+        print(itog)
+        return itog
+    else:
+        return jsonify({"message": "Неверный формат данных"}), 415
+
+
+UPLOAD_FOLDER = 'file'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', "doc", "docx"}  # Разрешенные расширения
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Максимальный размер файла (16MB)
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route('/push_file/<token>', methods=['POST'])
+def upload_file(token):
+    print(request.files)
+    if 'files' not in request.files:
+        print('No file part')
+        return jsonify({'message': 'No file part'}), 400
+
+    file = request.files['files']
+
+    print(file.filename)
+    if file.filename == '':
+        print('No selected file')
+        return jsonify({'message': 'No selected file'}), 400
+
+    if file and allowed_file(file.filename):
+        filename = file.filename
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        db = DB("react_db")
+
+        data = jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])
+
+        db.set_file(file.filename.split(".")[0], filename, data["id"])
+        print(data["id"], filename)
+        id_file = db.get_id_file(data["id"], filename)[0]
+        db.add_user_access_list(id_file, data["id"])
+
+        return jsonify({'message': 'File successfully uploaded', 'id_file': id_file}), 200
+    else:
+        print('File type not allowed')
+        return jsonify({'message': 'File type not allowed'}), 400
 
 
 if __name__ == "__main__":
